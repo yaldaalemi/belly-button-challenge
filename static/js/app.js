@@ -1,10 +1,15 @@
 d3.json("https://2u-data-curriculum-team.s3.amazonaws.com/dataviz-classroom/v1.1/14-Interactive-Web-Visualizations/02-Homework/samples.json").then( data => {
     console.log(data);
-    let sample_values = data.samples[0].sample_values.slice(0,10).reverse()
-    let otu_ids = data.samples[0].otu_ids.slice(0,10).reverse().map(function(item) {
-    return `OTU ${item}`;
-    })
-    let otu_labels = data.samples[0].otu_labels.slice(0,10).reverse()
+    plot(0);
+    function plot(i) {  
+    let sample_values = data.samples[i].sample_values.slice(0,10).reverse()
+    let bsample_values = data.samples[i].sample_values.reverse()
+    let otu_ids = data.samples[i].otu_ids.slice(0,10).reverse().map(function(item) {
+    return `OTU ${item}`;})
+    let botu_ids = data.samples[i].otu_ids.reverse()
+    let otu_labels = data.samples[i].otu_labels.slice(0,10).reverse()
+    let botu_labels = data.samples[i].otu_labels.reverse()
+    
     let trace1 = [{
         x: sample_values,
         y: otu_ids,
@@ -15,14 +20,43 @@ d3.json("https://2u-data-curriculum-team.s3.amazonaws.com/dataviz-classroom/v1.1
       let layout = {
         title: "Graph",
         margin: {
-          l: 100,
-          r: 100,
-          t: 100,
-          b: 100
+          l: 80,
+          r: 550,
+          t: 200,
+          b: 50
         }
       };  
     Plotly.newPlot("plot", trace1, layout); 
 
+    let btrace1 = [{
+      x: botu_ids,
+      y: bsample_values,
+      text: botu_labels,
+      mode: "markers",
+      marker: {
+        size: bsample_values,
+        color: botu_ids,
+        colorscale: "Earth"
+      }
+    }];
+    let blayout = {
+      title: "Graph",
+      margin: {
+        r: 50,
+        l: 50,
+        t: 50,
+        b: 50
+      }
+    };  
+  Plotly.newPlot("plot1", btrace1, blayout); 
+  let metadata = data.metadata[i]
+  var meta = d3.select("#sample-metadata");
+  meta.html("");
+  Object.entries(metadata).forEach(([key, value]) => {
+    meta.append("h6").text(`${key}: ${value}`);
+  });
+
+  }
 
 
 
@@ -44,38 +78,11 @@ d3.json("https://2u-data-curriculum-team.s3.amazonaws.com/dataviz-classroom/v1.1
         let dropdownMenu = d3.select("#selDataset");
         let dataset = dropdownMenu.property("value");
         for(let i = 0; i < data.samples.length; i++){
-            let item = data.samples[i]
-        if (dataset == item.id) {
-            let sample_values = item.sample_values.slice(0,10).reverse()
-            let otu_ids = item.otu_ids.slice(0,10).reverse().map(function(item) {
-                return `OTU ${item}`;
-              })
-            let otu_labels = item.otu_labels.slice(0,10).reverse()
-            let newdata = [sample_values, otu_ids,otu_labels];
-              updatePlotly(newdata);
-              function updatePlotly(newdata) {
-            Plotly.restyle("plot",sample_values, [newdata[0]], layout);
-                }
+
+        if (dataset == data.samples[i].id) {
+            plot(i);
         }
-    }
+        }
     }
 
 })
-
-
-// d3.selectAll("#selDataset").on("change", updatePlotly);
-// // This function is called when a dropdown menu item is selected
-// function updatePlotly() {
-//   // Use D3 to select the dropdown menu
-//   let dropdownMenu = d3.select("#selDataset");
-//   // Assign the value of the dropdown menu option to a variable
-//   let dataset = dropdownMenu.property("value");
-
-
-
-// let sample_values = data.samples[0].sample_values.slice(0,10).reverse()
-// let otu_ids = data.samples[0].otu_ids.slice(0,10).reverse().map(function(item) {
-//     return `OTU ${item}`;
-//   })
-//   console.log(otu_ids)
-// let otu_labels = data.samples[0].otu_labels.slice(0,10).reverse()

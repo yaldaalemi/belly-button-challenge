@@ -51,21 +51,15 @@ d3.json("https://2u-data-curriculum-team.s3.amazonaws.com/dataviz-classroom/v1.1
                 return `OTU ${item}`;
               })
             let otu_labels = item.otu_labels.slice(0,10).reverse()
-            let newdata = [{
-                x: sample_values,
-                y: otu_ids,
-                text: otu_labels,
-                type: "bar",
-                orientation: "h"
-              }];
+            let newdata = [sample_values, otu_ids,otu_labels];
               updatePlotly(newdata);
+              function updatePlotly(newdata) {
+            Plotly.restyle("plot",sample_values, [newdata[0]], layout);
+                }
         }
     }
     }
 
-    function updatePlotly(newdata) {
-        Plotly.restyle("plot",trace1, [newdata], layout);
-      }
 })
 
 
